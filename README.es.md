@@ -13,7 +13,7 @@
 [![Cobertura](https://img.shields.io/badge/cobertura-55%25-eab308)](htmlcov/)
 [![Licencia](https://img.shields.io/badge/licencia-MIT-6366f1)](LICENSE)
 
-*Desarrollado por [Moisés Yaurivilca](https://github.com/Brashkie) · Hepein Oficial · Lima, Perú 🇵🇪*
+*Desarrollado por [Brashkie](https://github.com/Brashkie) · Hepein Oficial*
 
 [English](README.md) · **Español**
 
@@ -1825,6 +1825,6 @@ git push origin feature/nombre-del-feature
 
 **ApexVision-Core** — Visión computacional de producción, sin dependencias de terceros.
 
-Desarrollado con ❤️ en Lima, Perú 🇵🇪 · [Licencia MIT](LICENSE) · [Hepein Oficial](https://github.com/Brashkie)
+Desarrollado con ❤️ · [Licencia MIT](LICENSE) · [Hepein Oficial](https://github.com/Brashkie)
 
 </div>
