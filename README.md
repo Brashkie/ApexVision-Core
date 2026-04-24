@@ -13,7 +13,7 @@
 [![Coverage](https://img.shields.io/badge/coverage-55%25-eab308)](htmlcov/)
 [![License](https://img.shields.io/badge/license-MIT-6366f1)](LICENSE)
 
-*Built by [Moisés Yaurivilca](https://github.com/Brashkie) · Hepein Oficial · Lima, Perú 🇵🇪*
+*Built by [Brashkie](https://github.com/Brashkie) · Hepein Oficial*
 
 </div>
 
@@ -1923,6 +1923,6 @@ git push origin feature/your-feature-name
 
 **ApexVision-Core** — Production computer vision, zero vendor lock-in.
 
-Built with ❤️ in Lima, Perú 🇵🇪 · [MIT License](LICENSE) · [Hepein Oficial](https://github.com/Brashkie)
+Built with ❤️ · [MIT License](LICENSE) · [Hepein Oficial](https://github.com/Brashkie)
 
 </div>
