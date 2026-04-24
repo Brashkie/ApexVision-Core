@@ -1,0 +1,10 @@
+FROM python:3.12-slim
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends gcc g++ libgl1 libglib2.0-0 && rm -rf /var/lib/apt/lists/*
+COPY python/requirements.txt .
+RUN pip install --no-cache-dir cython numpy && pip install --no-cache-dir -r requirements.txt
+COPY python/ ./python/
+RUN python python/setup.py build_ext --inplace
+RUN useradd -m -u 1000 apex && chown -R apex:apex /app
+USER apex
+CMD ["celery", "-A", "python.celery_app", "worker", "--loglevel=info", "--queues=vision,batch,default"]

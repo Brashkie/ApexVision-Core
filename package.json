@@ -1,0 +1,63 @@
+{
+  "name": "apexvision-core",
+  "version": "2.0.0",
+  "description": "Ultra Vision API Platform",
+  "author": "Brashkie / Hepein Oficial",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node scripts/dev.js",
+    "dev": "node scripts/dev.js",
+    "dev:api": "node scripts/dev.js --api-only",
+    "dev:worker": "celery -A python.celery_app worker --loglevel=info",
+    "dev:ts": "tsx watch src/index.ts",
+    "build": "npm run build:ts && npm run build:cython && npm run build:docker",
+    "build:ts": "tsc -p tsconfig.build.json",
+    "build:cython": "python python/setup.py build_ext --inplace",
+    "build:cython:win": "powershell -ExecutionPolicy Bypass -File scripts/build_cython.ps1",
+    "build:docker": "docker compose build",
+    "up": "docker compose up -d",
+    "up:prod": "docker compose --profile prod up -d",
+    "down": "docker compose down",
+    "logs": "docker compose logs -f",
+    "migrate": "alembic upgrade head",
+    "migrate:make": "alembic revision --autogenerate -m",
+    "seed": "python scripts/seed_db.py",
+    "test": "vitest run && python -m pytest tests/python -v",
+    "test:ts": "vitest run",
+    "test:py": "python -m pytest tests/python -v --tb=short",
+    "test:watch": "vitest",
+    "lint": "ruff check python/ && tsc --noEmit",
+    "lint:fix": "ruff check --fix python/ && ruff format python/",
+    "docs": "start http://localhost:8000/docs",
+    "migrate:down": "alembic downgrade -1",
+    "migrate:history": "alembic history --verbose",
+    "migrate:current": "alembic current",
+    "migrate:sql": "alembic upgrade head --sql",
+    "migrate:check": "alembic check",
+    "dev:beat": "celery -A python.celery_app beat --loglevel=info",
+    "dev:flower": "celery -A python.celery_app flower --port=5555",
+    "dev:all": "node scripts/dev.js",
+    "dev:no-ts": "node scripts/dev.js --no-ts"
+  },
+  "dependencies": {
+    "bullmq": "^5.0.0",
+    "ioredis": "^5.3.0",
+    "axios": "^1.7.0",
+    "zod": "^3.23.0",
+    "hono": "^4.4.0",
+    "ws": "^8.17.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.16.0",
+    "nodemon": "^3.1.0",
+    "concurrently": "^9.0.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0",
+    "@types/node": "^22.0.0",
+    "@types/ws": "^8.5.0",
+    "@hono/node-server": "^1.12.0"
+  }
+}

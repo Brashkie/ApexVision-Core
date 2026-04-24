@@ -1,0 +1,122 @@
+# ─────────────────────────────────────────────────────────────
+#  ApexVision-Core — .gitignore
+# ─────────────────────────────────────────────────────────────
+
+# ── Python ────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.pyo
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+pip-log.txt
+
+# ── Virtual environments ──────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+.env.local
+.env.production
+.env.staging
+
+# ── Tests & Coverage ──────────────────────────────────────────
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+nosetests.xml
+pytest.xml
+
+# ── Type checkers ─────────────────────────────────────────────
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pytype/
+
+# ── Ruff ─────────────────────────────────────────────────────
+.ruff_cache/
+
+# ── Node.js ───────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+.pnpm-debug.log*
+dist/
+.turbo/
+
+# ── TypeScript ────────────────────────────────────────────────
+*.tsbuildinfo
+
+# ── Celery ────────────────────────────────────────────────────
+celerybeat-schedule
+celerybeat-schedule.bak
+celerybeat-schedule.dat
+celerybeat-schedule.dir
+celerybeat.pid
+
+# ── Flower ────────────────────────────────────────────────────
+flower.db
+flower.db.bak
+flower.db.dat
+flower.db.dir
+
+# ── ML Models (no van en git — demasiado grandes) ─────────────
+models/*.pt
+models/*.onnx
+models/*.bin
+models/*.safetensors
+models/*.pth
+models/*.h5
+models/*.tflite
+
+# ── Delta Lake & Parquet ──────────────────────────────────────
+data/
+*.parquet
+*.delta
+_delta_log/
+
+# ── Logs ──────────────────────────────────────────────────────
+*.log
+logs/
+*.log.*
+
+# ── Cython compiled ───────────────────────────────────────────
+python/cython_ext/*.c
+python/cython_ext/*.so
+python/cython_ext/*.pyd
+python/cython_ext/build/
+
+# ── IDEs ─────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ── Secrets & Keys ────────────────────────────────────────────
+# .env se ignora — usa .env.example como template
+.env
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+
+# ── Temp ──────────────────────────────────────────────────────
+tmp/
+temp/
+*.tmp
+*.bak
+*.orig
+pip.txt
+requirements-local.txt

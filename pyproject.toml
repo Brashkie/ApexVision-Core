@@ -1,0 +1,301 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  ApexVision-Core — pyproject.toml
+#  Configuración unificada: build, pytest, ruff, mypy, coverage
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─────────────────────────────────────────────
+#  Build system
+# ─────────────────────────────────────────────
+
+[build-system]
+requires      = ["setuptools>=72", "wheel", "Cython>=3.0", "numpy>=1.26"]
+build-backend = "setuptools.backends.legacy:build"
+
+[tool.setuptools.packages.find]
+where   = ["."]
+include = ["python*"]
+exclude = ["tests*", "*.egg-info"]
+
+
+# ─────────────────────────────────────────────
+#  Project metadata
+# ─────────────────────────────────────────────
+
+[project]
+name        = "apexvision-core"
+version     = "2.0.0"
+description = "Production-grade computer vision platform — rival to Google Cloud Vision API"
+readme      = "README.md"
+requires-python = ">=3.11"
+license     = { text = "MIT" }
+
+authors = [
+  { name = "Moisés Yaurivilca", email = "hepeinoficialbrashkie@gmail.com" },
+]
+
+keywords = [
+  "computer-vision", "yolo", "clip", "ocr", "fastapi",
+  "celery", "delta-lake", "apexvision",
+]
+
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Framework :: FastAPI",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+
+# ─────────────────────────────────────────────
+#  pytest
+# ─────────────────────────────────────────────
+
+[tool.pytest.ini_options]
+
+# Dónde buscar tests
+testpaths = ["tests/python"]
+
+# Descubrimiento
+python_files   = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+# asyncio — modo strict: todos los tests async deben tener @pytest.mark.asyncio
+asyncio_mode = "strict"
+
+# Marcas personalizadas (evita warnings de PytestUnknownMarkWarning)
+markers = [
+  "slow: tests que tardan más de 5s (deselect con -m 'not slow')",
+  "integration: tests que requieren Redis/DB corriendo",
+  "gpu: tests que requieren GPU",
+  "unit: tests unitarios puros sin I/O",
+]
+
+# Output
+console_output_style = "progress"
+log_cli              = true
+log_cli_level        = "WARNING"
+log_format           = "%(asctime)s %(levelname)-5s %(name)s — %(message)s"
+log_date_format      = "%H:%M:%S"
+
+# Warnings a ignorar
+filterwarnings = [
+  "ignore::DeprecationWarning:celery",
+  "ignore::DeprecationWarning:kombu",
+  "ignore::UserWarning:billiard",
+  "ignore::ResourceWarning",             # GC warnings en Windows
+  "ignore::RuntimeWarning:asyncio",
+]
+
+# Opciones por defecto al correr pytest
+addopts = [
+  "--tb=short",                          # traceback corto
+  "--strict-markers",                    # falla si usa marca no registrada
+  "-q",                                  # quiet por defecto
+  "--no-header",
+  "--color=yes",
+]
+
+# Variables de entorno cargadas desde conftest.py + .env
+
+
+# ─────────────────────────────────────────────
+#  coverage
+# ─────────────────────────────────────────────
+
+[tool.coverage.run]
+source    = ["python"]
+omit      = [
+  "python/cython_ext/*",
+  "python/db/migrations/*",
+  "python/db/session.py",           # SQLAlchemy engine setup
+  "python/db/models.py",            # ORM models, sin lógica testeable
+  "python/storage/delta_store.py",  # requiere Delta Lake real instalado
+  "python/tasks/maintenance_tasks.py", # requiere Redis+DB corriendo
+  "python/setup.py",                # Cython build script
+  "*/tests/*",
+  "*/__init__.py",
+  "python/main.py",
+]
+branch    = true              # medir branch coverage también
+
+[tool.coverage.report]
+show_missing   = true
+skip_empty     = true
+skip_covered   = false
+precision      = 2
+fail_under     = 55           # falla CI si coverage < 70%
+exclude_lines  = [
+  "pragma: no cover",
+  "def __repr__",
+  "raise NotImplementedError",
+  "if TYPE_CHECKING:",
+  "if __name__ == .__main__.:",
+  "@overload",
+  "\\.\\.\\.",                 # ... (abstract methods)
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+
+# ─────────────────────────────────────────────
+#  Ruff — linter + formatter
+# ─────────────────────────────────────────────
+
+[tool.ruff]
+target-version = "py311"
+line-length    = 100
+indent-width   = 4
+
+# Qué analizar
+src = ["python", "tests"]
+exclude = [
+  ".venv", "dist", "build", ".git",
+  "python/db/migrations",     # migraciones generadas automáticamente
+  "python/cython_ext",        # código Cython
+  "__pycache__",
+  "*.egg-info",
+]
+
+[tool.ruff.lint]
+select = [
+  "E",    # pycodestyle errors
+  "W",    # pycodestyle warnings
+  "F",    # pyflakes
+  "I",    # isort
+  "B",    # flake8-bugbear
+  "C4",   # flake8-comprehensions
+  "UP",   # pyupgrade
+  "N",    # pep8-naming
+  "SIM",  # flake8-simplify
+  "TCH",  # flake8-type-checking
+  "RUF",  # ruff-specific rules
+  "ASYNC",# flake8-async
+  "LOG",  # flake8-logging
+]
+
+ignore = [
+  "E501",   # line too long — ruff format lo maneja
+  "B008",   # do not perform function call in default args (FastAPI usa Depends())
+  "N999",   # invalid module name — el paquete se llama 'python'
+  "SIM108", # ternary operator — a veces menos legible
+  "UP007",  # use X | Y for union — mantener compatibilidad
+  "TCH001", # move to TYPE_CHECKING block — no siempre aplica
+  "RUF012", # ClassVar annotation — demasiado estricto para nuestro caso
+]
+
+# Reglas extra solo para tests
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+  "S101",   # assert — normal en tests
+  "ANN",    # type annotations — no requeridas en tests
+  "D",      # docstrings — no requeridos en tests
+]
+"python/db/migrations/**/*.py" = [
+  "E501",   # líneas largas en SQL
+  "N806",   # variable name should be lowercase
+  "I001",   # import sorting
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["python"]
+force-sort-within-sections = true
+combine-as-imports = true
+
+[tool.ruff.lint.pep8-naming]
+# Excepciones para FastAPI y SQLAlchemy que usan nombres en PascalCase
+classmethod-decorators = ["classmethod", "validator", "root_validator"]
+
+[tool.ruff.format]
+quote-style              = "double"
+indent-style             = "space"
+skip-magic-trailing-comma = false
+line-ending              = "auto"
+
+
+# ─────────────────────────────────────────────
+#  Mypy — static type checker
+# ─────────────────────────────────────────────
+
+[tool.mypy]
+python_version          = "3.11"
+files                   = ["python"]
+exclude                 = [
+  "python/db/migrations",
+  "python/cython_ext",
+]
+
+# Strictness — empezamos medio estricto, subimos con el tiempo
+warn_return_any         = true
+warn_unused_configs     = true
+warn_unused_ignores     = true
+warn_redundant_casts    = true
+disallow_untyped_defs   = false   # demasiado estricto para codebase existente
+disallow_incomplete_defs = true
+check_untyped_defs      = true
+no_implicit_optional    = true
+strict_equality         = true
+
+# SQLAlchemy 2.0 usa su propio plugin de mypy
+plugins = ["sqlalchemy.ext.mypy.plugin"]
+
+# Ignorar módulos de terceros sin stubs
+[[tool.mypy.overrides]]
+module = [
+  "ultralytics.*",
+  "cv2.*",
+  "insightface.*",
+  "deepface.*",
+  "easyocr.*",
+  "paddleocr.*",
+  "deltalake.*",
+  "celery.*",
+  "kombu.*",
+  "billiard.*",
+  "redis.*",
+  "loguru.*",
+  "PIL.*",
+  "numpy.*",
+  "torch.*",
+  "torchvision.*",
+  "transformers.*",
+  "timm.*",
+  "albumentations.*",
+]
+ignore_missing_imports = true
+
+# Tests: menos estrictos
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+ignore_errors         = false
+
+
+# ─────────────────────────────────────────────
+#  Otros tools
+# ─────────────────────────────────────────────
+
+# Bandit — análisis de seguridad
+[tool.bandit]
+targets   = ["python"]
+exclude   = ["python/db/migrations", "tests"]
+skips     = [
+  "B101",   # assert_used — normal en código de validación
+  "B603",   # subprocess_without_shell_equals_true
+  "B607",   # start_process_with_partial_path
+]
+
+# Pyright (VSCode) — configuración básica
+[tool.pyright]
+pythonVersion         = "3.11"
+pythonPlatform        = "Windows"
+venvPath              = "."
+venv                  = ".venv"
+typeCheckingMode      = "basic"
+reportMissingImports  = true
+reportMissingTypeStubs = false
